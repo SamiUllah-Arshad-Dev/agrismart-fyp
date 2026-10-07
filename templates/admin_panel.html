@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart — Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .stat-item.clickable {
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .stat-item.clickable:hover {
+            background: #f0f4ff;
+            border-radius: 8px;
+        }
+        #detailsSection {
+            margin-top: 20px;
+        }
+        #detailsSection table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        #detailsSection th, #detailsSection td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        #detailsSection th {
+            background: #f5f6fa;
+        }
+        .close-details-btn {
+            margin-top: 12px;
+            padding: 6px 18px;
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .close-details-btn:hover {
+            background: #c0392b;
+        }
+        .search-container {
+            margin: 16px 0;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .search-container input:focus {
+            border-color: #2e7d32;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+        #searchResults {
+            margin-top: 10px;
+        }
+        #searchResults table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        #searchResults th, #searchResults td {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        #searchResults th {
+            background: #e8f5e9;
+        }
+        .stat-item.verified { background: #e8f5e9; border-left: 4px solid #2e7d32; }
+        .stat-item.unverified { background: #fff3e0; border-left: 4px solid #e65100; }
+    </style>
+</head>
+<body class="coop-body">
+
+    <header class="coop-header" style="display:flex; justify-content:space-between; align-items:center; width:100%; position:sticky; top:0; z-index:1000; padding:12px 24px; box-sizing:border-box;">
+
+        <div class="coop-brand">
+            <span class="coop-logo">🌱</span>
+            AgriSmart
+        </div>
+
+        <div style="display:flex; align-items:center; gap:14px;">
+            <span style="font-size:12px; font-weight:400; color:#999;">
+                Admin Panel
+            </span>
+
+            <button class="coop-logout" id="logoutBtnAdmin">Logout</button>
+        </div>
+
+    </header>
+
+    <main class="coop-main">
+        <div class="admin-card">
+
+            <h1>👑 Admin Dashboard</h1>
+            <p class="coop-subtitle">Manage users, disputes, flash sales, and system configuration.</p>
+
+            <div class="admin-stats" id="statsContainer">
+                <div class="stat-item clickable" onclick="loadDetails('users')">
+                    <span class="stat-number" id="statTotalUsers">0</span>
+                    Total Users
+                </div>
+                <div class="stat-item verified clickable" onclick="loadFilteredUsers('verified')">
+                    <span class="stat-number" id="statVerified" style="color:#2e7d32;">0</span>
+                    ✅ Verified
+                </div>
+                <div class="stat-item unverified clickable" onclick="loadFilteredUsers('unverified')">
+                    <span class="stat-number" id="statUnverified" style="color:#e65100;">0</span>
+                    ⏳ Unverified
+                </div>
+                <div class="stat-item clickable" onclick="loadDetails('orders')">
+                    <span class="stat-number" id="statOrders">0</span>
+                    📦 Orders
+                </div>
+                <div class="stat-item clickable" onclick="loadDetails('disputes')">
+                    <span class="stat-number" id="statDisputes">0</span>
+                    ⚖️ Disputes
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="statFlash">0</span>
+                    🔥 Flash Sales
+                </div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="userSearchInput" placeholder="🔍 Search users by name, email, or CNIC...">
+                <div id="searchResults"></div>
+            </div>
+
+            <div id="detailsSection" style="display:none;">
+                <div style="background:#f8f9fa; border-radius:8px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 id="detailsTitle" style="margin:0;">Details</h3>
+                        <button class="close-details-btn" onclick="document.getElementById('detailsSection').style.display='none'">✕ Close</button>
+                    </div>
+                    <div id="detailsContent"></div>
+                </div>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="users">👤 User Verification</button>
+                <button class="admin-tab" data-tab="disputes">⚖️ Disputes</button>
+                <button class="admin-tab" data-tab="flash">🔥 Flash Sales</button>
+            </div>
+
+            <div id="tab-users" class="admin-tab-content active">
+                <h3>Pending User Verifications</h3>
+                <div id="pendingUsersContainer">
+                    <p style="color:#999; text-align:center;">Loading pending users...</p>
+                </div>
+            </div>
+
+            <div id="tab-disputes" class="admin-tab-content">
+                <h3>Dispute Resolution</h3>
+                <div id="disputesContainer">
+                    <p style="color:#999; text-align:center;">Loading disputes...</p>
+                </div>
+            </div>
+
+            <div id="tab-flash" class="admin-tab-content">
+                <h3>Active Flash Sales</h3>
+                <div id="flashSalesContainer">
+                    <p style="color:#999; text-align:center;">Loading flash sales...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="coop-toast"></div>
+
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

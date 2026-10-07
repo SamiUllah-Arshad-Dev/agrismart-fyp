@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart - Farmer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        .notif-wrapper { position: relative; display: inline-block; }
+        .notif-bell-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 18px; position: relative; padding: 4px;
+        }
+        .notif-badge {
+            position: absolute; top: -4px; right: -4px;
+            background: #d32f2f; color: #fff; font-size: 10px;
+            font-weight: 700; border-radius: 10px; padding: 1px 5px;
+            display: none;
+        }
+        .notif-panel {
+            display: none; position: absolute; right: 0; top: 30px;
+            width: 320px; max-height: 380px; overflow-y: auto;
+            background: #fff; border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12); border: 1px solid #eee;
+            z-index: 500;
+        }
+        .notif-panel.show { display: block; }
+        .notif-panel-header {
+            padding: 10px 14px; font-weight: 700; font-size: 13px;
+            color: #1B5E20; border-bottom: 1px solid #f0f0f0;
+        }
+        .notif-item {
+            padding: 10px 14px; border-bottom: 1px solid #f5f5f5;
+            font-size: 12.5px; color: #333; line-height: 1.4;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item.unread { background: #f1f8f1; }
+        .notif-time { font-size: 10.5px; color: #999; margin-top: 3px; }
+        .notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        .modal-header {
+            border-bottom: 1px solid #e8f5e9;
+            background: #f8fff8;
+            border-radius: 12px 12px 0 0;
+        }
+        .modal-title {
+            color: #1B5E20;
+            font-weight: 700;
+        }
+        .modal-footer {
+            border-top: 1px solid #e8f5e9;
+        }
+        .form-control:focus {
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.2);
+        }
+        #editCurrentPhotoContainer {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px dashed #ccc;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .dash-card#flash-alerts {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; background:#f0f4f0;">
+
+<div class="dashboard-wrapper">
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-name">🌿 AgriSmart</div>
+            <div class="brand-sub">Farmer Portal</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#create-listing" class="active" id="nav-create">
+                📋 Create Listing
+            </a>
+            <a href="#my-listings" id="nav-listings">
+                📦 My Listings
+            </a>
+            <a href="#escrow-history" id="nav-escrow">
+                💰 Escrow History
+            </a>
+            <a href="#flash-alerts" id="nav-flash">
+                ⚡ Flash Sale Alerts
+            </a>
+        </nav>
+    </aside>
+
+    <header class="top-navbar">
+        <div class="navbar-tabs">
+            <a href="#" class="active">Farmer Portal</a>
+        </div>
+        <div class="navbar-right">
+            <div class="notif-wrapper">
+                <button class="notif-bell-btn" id="notifBellBtn" title="Notifications">
+                    🔔
+                    <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+                <div class="notif-panel" id="notifPanel">
+                    <div class="notif-panel-header">Notifications</div>
+                    <div id="notifList">
+                        <div class="notif-empty">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="farmer-avatar" id="farmerInitials">AR</div>
+            <span id="farmerNameDisplay" style="font-size:14px; font-weight:600; color:#333;">
+                Loading...
+            </span>
+            <button class="btn-logout" id="logoutBtn" title="Logout">⎋</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="welcome-heading" id="welcomeHeading">Welcome back!</div>
+        <div class="welcome-sub">
+            Manage your produce and monitor market demands in real-time.
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div>
+
+                <div class="dash-card" id="create-listing">
+                    <h3>📋 Create New Listing</h3>
+                    <form id="createListingForm" novalidate>
+                        <div class="listing-form-grid">
+                            <div class="form-group">
+                                <label>Crop Type</label>
+                                <input type="text" id="cropType"
+                                       placeholder="e.g. Premium Basmati Rice">
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity (kg)</label>
+                                <input type="number" id="quantity"
+                                       placeholder="e.g. 500" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Price per kg (Rs)</label>
+                                <input type="number" id="pricePerKg"
+                                       placeholder="Leave blank for ML price" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <input type="date" id="expiryDate">
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-upload"
+                                    onclick="document.getElementById('photoInput').click()">
+                                📷 Upload Photos
+                            </button>
+                            <button type="button" class="btn-ml" id="mlForecastBtn">
+                                📈 Get ML Price + Demand Forecast
+                            </button>
+                            <input type="file" id="photoInput"
+                                   accept="image/*" multiple>
+                        </div>
+
+                        <div id="photoPreview" style="font-size:12px; color:#2E7D32; margin-top:6px;"></div>
+
+                        <div class="forecast-result" id="forecastResult">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div style="font-size:12px; color:#888; margin-bottom:2px;">
+                                        Recommended Price
+                                    </div>
+                                    <div class="forecast-price" id="forecastPrice">Rs. —</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:12px; color:#888; margin-bottom:2px;">
+                                        Demand Forecast
+                                    </div>
+                                    <div class="forecast-demand" id="forecastDemand">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-create-listing"
+                                id="createListingBtn">
+                            ✅ Create Listing
+                        </button>
+                    </form>
+                </div>
+
+                <div class="dash-card" id="my-listings">
+                    <h3>📦 My Listings</h3>
+                    <div id="listingsContainer">
+                        <div class="loading-text">Loading listings...</div>
+                    </div>
+                </div>
+
+                <div class="dash-card" id="escrow-history">
+                    <h3>💰 Escrow History & Payments</h3>
+                    <div id="escrowContainer">
+                        <div class="loading-text">Loading escrow history...</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="dash-card" id="flash-alerts">
+                <h3>⚡ Flash Sale Alerts</h3>
+                <div id="flashAlertsContainer">
+                    <div class="loading-text">Loading alerts...</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">✏️ Edit Listing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" enctype="multipart/form-data">
+                    <input type="hidden" id="editListingId">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editCropType" class="form-label">Crop Type</label>
+                                <input type="text" id="editCropType" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editQuantity" class="form-label">Quantity (kg)</label>
+                                <input type="number" id="editQuantity" class="form-control" step="0.1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPrice" class="form-label">Price per kg (Rs)</label>
+                                <input type="number" id="editPrice" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editExpiry" class="form-label">Expiry Date</label>
+                                <input type="date" id="editExpiry" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Current Photo</label>
+                        <div id="editCurrentPhotoContainer">
+                            <img id="editCurrentPhoto" src="" alt="Current photo" style="max-width:150px; max-height:150px; object-fit:cover; border-radius:8px; border:1px solid #ddd; display:none;">
+                            <span style="color:#999;">No photo uploaded.</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editPhotoInput" class="form-label">Upload New Photo (optional)</label>
+                        <input type="file" id="editPhotoInput" class="form-control" accept="image/*">
+                        <small class="text-muted">Leave empty to keep current photo.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success mt-2" id="editSubmitBtn">
+                        ✅ Update Listing
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+<script type="module">
+    import { initFarmerDashboard } from
+        "{{ url_for('static', filename='js/farmer.js') }}";
+    initFarmerDashboard();
+</script>
+</body>
+</html>

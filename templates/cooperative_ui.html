@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSmart — Create Combined Listing</title>
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="coop-body">
+
+  <header class="coop-header">
+    <div class="coop-brand">
+      <span class="coop-brand-icon">🌱</span>
+      AgriSmart
+    </div>
+    <div style="display:flex; align-items:center; gap:14px;">
+
+      <div class="notif-wrapper">
+        <button class="notif-bell-btn" id="notifBellBtn" title="Notifications">
+          🔔
+          <span class="notif-badge" id="notifBadge">0</span>
+        </button>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-panel-header">Notifications</div>
+          <div id="notifList">
+            <div class="notif-empty">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <span id="coopUserName"
+            style="font-weight:600; font-size:14px; color:#1e293b;">
+        Cooperative
+      </span>
+      <button class="coop-logout-btn" id="logoutBtnCoop">
+        ⇥ Logout
+      </button>
+    </div>
+  </header>
+
+  <main class="coop-main">
+
+    <div class="coop-card">
+
+      <h1>Create Combined Listing for Multiple Small Farmers</h1>
+
+      <p class="subtitle">
+        Select the farmers whose products you want to combine,
+        then choose a crop they all have in stock.
+      </p>
+
+      <label class="coop-field-label">Select Farmers</label>
+
+      <div class="coop-farmer-grid" id="farmerGrid">
+        <p style="grid-column:1/-1; color:#9ca3af;">
+          Loading farmers...
+        </p>
+      </div>
+
+      <div class="coop-crop-group">
+        <label class="coop-field-label">Crop Type</label>
+        <select class="coop-input" id="cropType">
+          <option value="">-- Select crop --</option>
+        </select>
+      </div>
+
+      <div class="coop-two-col">
+        <div>
+          <label class="coop-field-label">Total Quantity (kg)</label>
+          <input type="number" class="coop-input" id="totalQty"
+                 placeholder="e.g., 200" min="1">
+        </div>
+        <div>
+          <label class="coop-field-label">Price per kg (Rs)</label>
+          <input type="number" class="coop-input" id="pricePerKg"
+                 placeholder="e.g., 45" min="1">
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <label class="coop-field-label">Expiry Date</label>
+        <input type="date" class="coop-input" id="expiryDate" required>
+        <small style="display:block; margin-top:6px;
+                      color:#6b7280; font-size:12px;">
+          Select the date until which this combined
+          crop batch remains available.
+        </small>
+      </div>
+
+      <button class="coop-submit-btn" id="submitBtn">
+        🚜 Create Combined Listing
+      </button>
+
+      <h2 class="coop-section-title">
+        Selected Farmers and their contributions
+      </h2>
+
+      <div id="previewContainer">
+        <p style="color:#9ca3af; text-align:center;">
+          Select farmers and a crop to see preview.
+        </p>
+      </div>
+
+      <h2 class="coop-section-title">My Combined Listings</h2>
+
+      <div id="myListingsContainer">
+        <p style="color:#9ca3af; text-align:center;">
+          Loading your combined listings...
+        </p>
+      </div>
+
+      <h2 class="coop-section-title">
+        📦 Orders on Cooperative Listings
+      </h2>
+
+      <div id="coopOrdersContainer">
+        <p style="color:#9ca3af; text-align:center;">
+          Loading orders...
+        </p>
+      </div>
+
+      <p class="coop-footer-note">
+        "This listing will appear as one batch for buyers.
+        Each selected farmer will see the listing in their
+        own dashboard."
+      </p>
+
+    </div>
+
+  </main>
+
+  <div id="toast" class="coop-toast"></div>
+
+  <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/cooperative.js') }}"></script>
+
+</body>
+</html>

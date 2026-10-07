@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="card">
+    <div class="brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+             fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="brand-icon">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+        <span>AgriSmart</span>
+    </div>
+
+    <h2>Welcome Back</h2>
+    <p class="sub-heading">Please enter your details to continue</p>
+
+    <form id="loginForm" novalidate autocomplete="off">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" autocomplete="off">
+            <div class="error-msg" id="emailError">Please enter a valid email.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-wrapper">
+                <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
+                <button type="button" class="toggle-eye slashed" id="togglePassword"></button>
+            </div>
+            <div class="error-msg" id="passwordError">Password is required.</div>
+        </div>
+
+        <button type="submit" class="btn-login" id="loginBtn">Login</button>
+
+        <div class="extra-links">
+            <a href="#" id="forgotLink">Forgot Password?</a>
+            <span>|</span>
+            <a href="#" id="registerLink">Create an Account</a>
+        </div>
+
+        <div class="login-notice">
+            Your CNIC will be verified by admin after registration.
+        </div>
+
+        <hr>
+
+        <div class="footer">
+            <div class="brand-sm">AgriSmart</div>
+            <div>© 2024 AgriSmart. Cultivating precision through technology.</div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a> |
+                <a href="#">Terms of Service</a> |
+                <a href="#">Support</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="module">
+    import { initLogin } from "{{ url_for('static', filename='js/login.js') }}";
+    initLogin();
+</script>
+</body>
+</html>

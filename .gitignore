@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Secrets
+.env
+
+# Database
+*.db
+*.sqlite3
+instance/
+
+# Logs
+*.log
+agrismart.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# User uploads
+static/uploads/
+static/delivery_photos/
+
+# Backups
+_templates_backup/
+
+# Development scripts
+test*.py
+check_*.py
+fix_*.py
+diagnose*.py
+approve*.py
+approve*.txt
+verify*.py
+create_*.py
+add_balance*.py
+buyer_agri.py
+command.py
+generate_data.py
+location.py
+migrate.py
+migrate_cooperative.py
+order_check.py
+phone.py
+quick_setup.py
+reset_password_for_testing.py
+script.py
+seed_demo.py
+updated_phones.py
+user.py
+view_combined_listings.py
+Test.txt*
+debug_photoes.py

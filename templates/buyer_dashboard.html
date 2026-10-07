@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart – Buyer Dashboard</title>
+
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f4f0;
+            font-family: 'Inter', sans-serif;
+            padding-top: 20px;
+        }
+        .container-custom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .top-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1B5E20;
+        }
+        .wallet-badge {
+            background: #E8F5E9;
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .wallet-amount {
+            color: #2E7D32;
+        }
+        .btn-add-funds {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-add-funds:hover {
+            background: #1b5e20;
+            color: white;
+        }
+        .buyer-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .verified-badge {
+            font-size: 12px;
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+        .logout-icon {
+            font-size: 22px;
+            color: #d32f2f;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .logout-icon:hover {
+            color: #b71c1c;
+        }
+        .notif-wrapper { position: relative; display: inline-block; }
+        .notif-bell-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 18px; position: relative; padding: 4px;
+        }
+        .notif-badge {
+            position: absolute; top: -4px; right: -4px;
+            background: #d32f2f; color: #fff; font-size: 10px;
+            font-weight: 700; border-radius: 10px; padding: 1px 5px;
+            display: none;
+        }
+        .notif-panel {
+            display: none; position: absolute; right: 0; top: 30px;
+            width: 320px; max-height: 380px; overflow-y: auto;
+            background: #fff; border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12); border: 1px solid #eee;
+            z-index: 500;
+        }
+        .notif-panel.show { display: block; }
+        .notif-panel-header {
+            padding: 10px 14px; font-weight: 700; font-size: 13px;
+            color: #1B5E20; border-bottom: 1px solid #f0f0f0;
+        }
+        .notif-item {
+            padding: 10px 14px; border-bottom: 1px solid #f5f5f5;
+            font-size: 12.5px; color: #333; line-height: 1.4;
+        }
+        .notif-item:last-child { border-bottom: none; }
+        .notif-item.unread { background: #f1f8f1; }
+        .notif-time { font-size: 10.5px; color: #999; margin-top: 3px; }
+        .notif-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
+        .search-bar-row {
+            background: white;
+            border-radius: 60px;
+            padding: 6px 6px 6px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .search-bar-row .form-control {
+            border: none;
+            border-radius: 40px;
+            padding: 10px 16px;
+            font-size: 14px;
+            flex: 1 1 200px;
+            background: transparent;
+        }
+        .search-bar-row .form-control:focus {
+            box-shadow: none;
+            background: #f8fbf8;
+        }
+        .search-bar-row .form-select {
+            border: none;
+            border-radius: 40px;
+            padding: 10px 16px;
+            font-size: 14px;
+            flex: 0 1 150px;
+            background: #f8fbf8;
+            cursor: pointer;
+        }
+        .search-bar-row .btn-search {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .search-bar-row .btn-search:hover {
+            background: #1b5e20;
+        }
+        .dash-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+            border: 1px solid #f0f4f0;
+        }
+        .dash-card .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .flash-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            flex-wrap: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: #2E7D32 #e0e0e0;
+        }
+        .flash-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .flash-scroll::-webkit-scrollbar-thumb {
+            background: #2E7D32;
+            border-radius: 10px;
+        }
+        .flash-card {
+            min-width: 180px;
+            max-width: 200px;
+            flex-shrink: 0;
+            border: 1px solid #e9ecef;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: 0.2s;
+            background: white;
+        }
+        .flash-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .flash-card .card-img {
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f8f5;
+            font-size: 36px;
+        }
+        .flash-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .flash-card .card-body {
+            padding: 12px 14px;
+        }
+        .flash-card .crop-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .flash-card .price-discount {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .flash-card .price-current {
+            font-weight: 700;
+            color: #2E7D32;
+            font-size: 16px;
+        }
+        .flash-card .price-original {
+            font-size: 13px;
+            color: #aaa;
+            text-decoration: line-through;
+        }
+        .flash-card .discount-badge {
+            background: #d32f2f;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .flash-card .qty {
+            font-size: 12px;
+            color: #777;
+        }
+        .flash-card .rating {
+            font-size: 12px;
+            color: #F57F17;
+        }
+        .btn-buy-now {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 6px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 8px;
+            transition: 0.2s;
+        }
+        .btn-buy-now:hover {
+            background: #1b5e20;
+            color: white;
+        }
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 18px;
+        }
+        .listing-card {
+            border: 1px solid #e9ecef;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: 0.2s;
+            background: white;
+        }
+        .listing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+        .listing-card .card-img {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f8f5;
+            font-size: 32px;
+        }
+        .listing-card .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .listing-card .card-body {
+            padding: 10px 12px;
+        }
+        .listing-card .crop-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .listing-card .price {
+            font-weight: 700;
+            color: #2E7D32;
+            font-size: 16px;
+        }
+        .listing-card .stock {
+            font-size: 12px;
+            color: #777;
+        }
+        .listing-card .rating {
+            font-size: 12px;
+            color: #F57F17;
+        }
+        .listing-card .btn-buy-now {
+            margin-top: 6px;
+            padding: 5px;
+            font-size: 12px;
+        }
+        .right-card {
+            background: white;
+            border-radius: 18px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border: 1px solid #f0f4f0;
+            margin-bottom: 20px;
+        }
+        .right-card .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .order-item {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 0;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .order-item .order-id {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .order-item .order-crop {
+            font-size: 13px;
+            color: #555;
+        }
+        .order-item .order-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .status-delivered { background: #E8F5E9; color: #2E7D32; }
+        .status-paid { background: #E3F2FD; color: #1565C0; }
+        .status-pending { background: #FFF3E0; color: #E65100; }
+        .status-disputed { background: #FFEBEE; color: #c62828; }
+        .status-completed { background: #E8F5E9; color: #2E7D32; }
+        .status-cancelled { background: #ECEFF1; color: #607D8B; }
+        .btn-action-sm {
+            padding: 3px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            margin-right: 4px;
+        }
+        .btn-confirm { background: #2E7D32; color: white; }
+        .btn-rate { background: #1B5E20; color: white; }
+        .btn-dispute { background: #fff; color: #d32f2f; border: 1px solid #d32f2f; }
+        .btn-view { background: #eee; color: #333; border: 1px solid #ddd; }
+        .escrow-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        .escrow-item:last-child {
+            border-bottom: none;
+        }
+        .escrow-amount { font-weight: 700; color: #333; }
+        .escrow-held { color: #d32f2f; font-weight: 600; font-size: 12px; }
+        .escrow-released { color: #2E7D32; font-weight: 600; font-size: 12px; }
+        .order-table-wrap {
+            overflow-x: auto;
+        }
+        .order-table th {
+            background: #f9fbf9;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .order-table td {
+            vertical-align: middle;
+        }
+        .order-table .status-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 20px;
+        }
+        .footer {
+            border-top: 1px solid #e9ecef;
+            padding: 20px 0 10px;
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .footer a {
+            color: #2E7D32;
+            text-decoration: none;
+            margin: 0 6px;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .toast-container-custom {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            min-width: 300px;
+        }
+        .modal-content {
+            border-radius: 18px;
+            border: none;
+        }
+        .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .modal-footer {
+            border-top: none;
+        }
+        .btn-modal-confirm {
+            background: #2E7D32;
+            color: white;
+        }
+        .btn-modal-confirm:hover {
+            background: #1b5e20;
+        }
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .search-bar-row {
+                border-radius: 20px;
+                padding: 12px;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-bar-row .form-control,
+            .search-bar-row .form-select,
+            .search-bar-row .btn-search {
+                width: 100%;
+                flex: none;
+            }
+            .listings-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+        @media (max-width: 576px) {
+            .flash-card {
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-custom">
+
+    <div class="toast-container-custom" id="toastContainer">
+        <div id="toast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage">Success</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="top-bar d-flex justify-content-between align-items-center flex-wrap">
+        <div class="logo-text">🌿 AgriSmart</div>
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <span class="wallet-badge">💰 Wallet: <span class="wallet-amount" id="walletBalance">0</span></span>
+            <button class="btn-add-funds" id="addFundsBtn">+ Add Funds</button>
+            <div class="notif-wrapper">
+                <button class="notif-bell-btn" id="notifBellBtn" title="Notifications">
+                    🔔
+                    <span class="notif-badge" id="notifBadge">0</span>
+                </button>
+                <div class="notif-panel" id="notifPanel">
+                    <div class="notif-panel-header">Notifications</div>
+                    <div id="notifList">
+                        <div class="notif-empty">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            <span class="buyer-name" id="buyerNameDisplay">Ahmed Raza</span>
+            <span class="verified-badge">✓ Verified</span>
+            <i class="bi bi-box-arrow-right logout-icon" id="logoutBtn" title="Logout"></i>
+        </div>
+    </div>
+
+    <div class="search-bar-row">
+        <input type="text" class="form-control" id="searchInput" placeholder="Search crops...">
+        <button class="btn-search" id="searchBtn">🔍 Search</button>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+
+            <div class="dash-card">
+                <div class="card-title">🔥 Flash Sale Alerts <span class="badge bg-danger">Live</span></div>
+                <div class="flash-scroll" id="flashSaleContainer">
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <div class="card-title">🛒 All Active Listings <span class="badge bg-secondary" id="listingsCount">13</span></div>
+                <div class="listings-grid" id="listingsContainer">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="right-card">
+                <div class="card-title">🕐 Recent Orders</div>
+                <div id="recentOrdersContainer">
+                </div>
+            </div>
+
+            <div class="right-card">
+                <div class="card-title">🛡️ Escrow Protection</div>
+                <div id="escrowContainer">
+                </div>
+                <div class="small text-muted mt-2">🔒 Funds safe until delivery confirmation.</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="dash-card mt-4">
+        <div class="card-title">📋 Full Order History</div>
+        <div class="order-table-wrap">
+            <table class="table order-table align-middle">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Crop</th>
+                        <th>Farmer</th>
+                        <th>Quantity</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orderHistoryBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div>AgriSmart</div>
+        <div>© 2024 AgriSmart. Cultivating precision through technology.</div>
+        <div>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a> |
+            <a href="#">Support</a>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="buyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">🛒 Place Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalListingInfo" class="mb-2"><strong>Crop</strong> — Rs. X/kg</div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Quantity (kg)</label>
+                    <input type="number" class="form-control" id="modalQty" placeholder="Enter quantity" min="1">
+                </div>
+                <div class="alert alert-success" id="modalTotal">Total: Rs. 0</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-modal-confirm" id="modalConfirmBtn">✅ Confirm Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script type="module">
+    import { initBuyerDashboard } from "{{ url_for('static', filename='js/buyer.js') }}";
+    initBuyerDashboard();
+</script>
+</body>
+</html>
