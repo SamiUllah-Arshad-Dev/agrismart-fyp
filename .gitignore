@@ -61,3 +61,8 @@ user.py
 view_combined_listings.py
 Test.txt*
 debug_photoes.py
+# HTTP test files with tokens
+*.http
+
+approval_need.py
+models/model copy.pkl

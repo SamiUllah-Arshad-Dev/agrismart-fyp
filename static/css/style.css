@@ -483,7 +483,7 @@ hr {
 .btn-logout {
     background: none;
     border: none;
-    color: #888;
+    color: blue;
     cursor: pointer;
     font-size: 20px;
     padding: 4px;
@@ -1450,7 +1450,7 @@ hr {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #ffffff;
+    background: blue;
     color: #111827;
     border: 1px solid #d1d5db;
     border-radius: 6px;

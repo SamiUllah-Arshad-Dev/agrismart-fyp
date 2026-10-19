@@ -102,7 +102,8 @@ def auto_complete_stale_orders():
         cutoff = datetime.now() - timedelta(days=2)
         old_orders = Order.query.filter(
             Order.status == OrderStatus.DELIVERED,
-            Order.orderDate < cutoff
+            Order.deliveredAt.isnot(None),
+            Order.deliveredAt < cutoff
         ).all()
 
         for o in old_orders:

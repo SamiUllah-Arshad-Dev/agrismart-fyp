@@ -363,6 +363,7 @@ def confirm(oid):
         return jsonify({"error": "Escrow is not available for release"}), 400
 
     order.deliveryPhoto = url
+    order.deliveredAt = datetime.now(timezone.utc)
     order.status = OrderStatus.DELIVERED
 
     cooperative = order.listing.cooperative_listing if order.listing else None

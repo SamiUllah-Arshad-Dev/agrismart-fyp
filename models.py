@@ -180,6 +180,7 @@ class Order(db.Model):
     listingId = db.Column(db.Integer, db.ForeignKey('croplisting.listingId'), nullable=False)
 
     orderDate = db.Column(db.DateTime, nullable=False)
+    deliveredAt = db.Column(db.DateTime, nullable=True)
     quantity = db.Column(db.Float, nullable=True)
     totalAmount = db.Column(db.Float, nullable=False)
 
