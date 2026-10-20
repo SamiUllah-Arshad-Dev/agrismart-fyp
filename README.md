@@ -1,11 +1,11 @@
 # AgriSmart
 
-AgriSmart is a web-based Final Year Project (FYP-2) built to connect farmers 
-and buyers directly in Punjab, Pakistan. Farmers list their crops, buyers 
-purchase through the platform, and an escrow-based order flow protects both 
+AgriSmart is a web-based Final Year Project (FYP-2) built to connect farmers
+and buyers directly in Punjab, Pakistan. Farmers list their crops, buyers
+purchase through the platform, and an escrow-based order flow protects both
 sides.
 
-The system has 4 user roles — Farmer, Buyer, Cooperative, and Admin — with 
+The system has 4 user roles — Farmer, Buyer, Cooperative, and Admin — with
 JWT authentication and separate dashboards for each.
 
 ## Main Features
@@ -13,7 +13,7 @@ JWT authentication and separate dashboards for each.
 - ML-based price prediction and demand forecasting using Random Forest
 - Escrow system — buyer's payment is held until delivery is confirmed
 - Automatic flash sales for near-expiry crops (Wastage Monitor)
-- Cooperative combined listings — small farmers pool their stock into one 
+- Cooperative combined listings — small farmers pool their stock into one
   batch and payout is split proportionally
 - Dispute handling by admin (release, hold, refund)
 - Notifications for orders, flash sales, and disputes
@@ -22,49 +22,75 @@ JWT authentication and separate dashboards for each.
 
 ## Technology Used
 
-Backend: Python, Flask, Flask-JWT-Extended
-Database: SQLite, Flask-SQLAlchemy
-Frontend: HTML, CSS, Vanilla JavaScript
-ML: scikit-learn (RandomForestRegressor), pandas, joblib
-Scheduler: APScheduler
-Auth: JWT
+- **Backend:** Python, Flask, Flask-JWT-Extended
+- **Database:** SQLite, Flask-SQLAlchemy
+- **Frontend:** HTML, CSS, Vanilla JavaScript
+- **ML:** scikit-learn (RandomForestRegressor), pandas, joblib
+- **Scheduler:** APScheduler
+- **Auth:** JWT
 
 ## How It Works
 
-Normal Order:
-Farmer creates listing -> Buyer places order -> Payment held in Escrow -> 
+**Normal Order:**
+Farmer creates listing -> Buyer places order -> Payment held in Escrow ->
 Buyer confirms delivery -> Escrow released to farmer -> Buyer rates farmer
 
-Cooperative Order:
-Cooperative selects multiple farmers -> Creates combined listing -> Backend 
-calculates each farmer's contribution -> Shadow listing created for buyer -> 
-Buyer purchases -> CooperativeOrderShare records payout split -> Escrow 
+**Cooperative Order:**
+Cooperative selects multiple farmers -> Creates combined listing -> Backend
+calculates each farmer's contribution -> Shadow listing created for buyer ->
+Buyer purchases -> CooperativeOrderShare records payout split -> Escrow
 released proportionally to each farmer
 
-Dispute:
-Buyer raises dispute -> Escrow status becomes DISPUTED -> Admin resolves 
+**Dispute:**
+Buyer raises dispute -> Escrow status becomes DISPUTED -> Admin resolves
 with release, hold, or refund -> Wallets updated and notifications sent
 
-Flash Sale:
-Wastage Monitor runs every 6 hours -> Near-expiry listings detected -> 
-Automatic flash sale triggered -> Farmers and cooperatives can Accept/Decline 
+**Flash Sale:**
+Wastage Monitor runs every 6 hours -> Near-expiry listings detected ->
+Automatic flash sale triggered -> Farmers and cooperatives can Accept/Decline
 -> Buyers notified and can purchase at discounted price
 
 ## Database
 
 16 tables in total:
 
-User + Profiles: User, Farmer, Buyer, Admin, Cooperative
-Core: CropListing, ListingPhoto, Order, Escrow, Rating, FlashSale, 
-Notification, WastageMonitor
-Cooperative: CooperativeListing, CooperativeFarmer, 
-CooperativeSourceAllocation, CooperativeOrderShare
+- **User + Profiles:** User, Farmer, Buyer, Admin, Cooperative
+- **Core:** CropListing, ListingPhoto, Order, Escrow, Rating, FlashSale,
+  Notification, WastageMonitor
+- **Cooperative:** CooperativeListing, CooperativeFarmer,
+  CooperativeSourceAllocation, CooperativeOrderShare
+
+## How to Run
+
+1. Clone the repository
+```bash
+git clone https://github.com/SamiUllah-Arshad-Dev/agrismart-fyp.git
+cd agrismart-fyp
+```
+
+2. Create a virtual environment and install dependencies
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+3. Create a `.env` file in the project root
+```
+SECRET_KEY=your-secret-key
+JWT_SECRET_KEY=your-jwt-secret
+```
+
+4. Run the app
+```bash
+python app.py
+```
+
+5. Open http://127.0.0.1:5000 in your browser
 
 ## Team Work
 
-Backend, Database and ML: Config, models, app setup, auth, farmer/buyer/
-cooperative/admin backends, ML model, wastage monitor
-
-Frontend: HTML templates, CSS, JavaScript
+- **Backend, Database and ML:** Config, models, app setup, auth, farmer/buyer/cooperative/admin backends, ML model, wastage monitor
+- **Frontend:** HTML templates, CSS, JavaScript
 
 BS Information Technology — FYP-2
